@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Time slots</title>
+    <th:block th:replace="~{fragments/layout :: headLinks}"/>
+</head>
+<body class="container py-4">
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<h1>Time slots</h1>
+<a th:href="@{/timeslots/new}" class="btn btn-primary mb-3">Add time slot</a>
+<form th:action="@{/timeslots/generate}" method="post" class="d-inline">
+    <button class="btn btn-outline-secondary mb-3"
+            onclick="return confirm('Create Monday-Saturday, periods 1-10 (existing ones are kept)?')">
+        Generate default slots
+    </button>
+</form>
+
+<table class="table table-striped">
+    <thead>
+    <tr><th>Day</th><th>Period</th><th></th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="t : ${slots}">
+        <td th:text="${t.dayLabel}"></td>
+        <td th:text="'Tiết ' + ${t.period}"></td>
+        <td>
+            <a th:href="@{/timeslots/{id}/edit(id=${t.id})}" class="btn btn-sm btn-warning">Edit</a>
+            <form th:action="@{/timeslots/{id}/delete(id=${t.id})}" method="post" class="d-inline">
+                <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this time slot?')">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Timetable</title>
+    <th:block th:replace="~{fragments/layout :: headLinks}"/>
+    <style>
+        .tt th, .tt td { text-align: center; vertical-align: middle; white-space: pre-line; font-size: .8rem; }
+        .tt td { min-width: 110px; height: 64px; }
+        .tt.compact td { min-width: 62px; height: 42px; font-size: .7rem; }
+    </style>
+</head>
+<body class="container-fluid py-4">
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<h1 th:text="${matrix.title}"></h1>
+
+<div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+    <ul class="nav nav-pills">
+        <li class="nav-item"><a class="nav-link" th:classappend="${mode == 'overview'} ? 'active'"
+                                th:href="@{/timetable(mode='overview')}">School overview</a></li>
+        <li class="nav-item"><a class="nav-link" th:classappend="${mode == 'class'} ? 'active'"
+                                th:href="@{/timetable(mode='class')}">By class</a></li>
+        <li class="nav-item"><a class="nav-link" th:classappend="${mode == 'teacher'} ? 'active'"
+                                th:href="@{/timetable(mode='teacher')}">By teacher</a></li>
+        <li class="nav-item"><a class="nav-link" th:classappend="${mode == 'room'} ? 'active'"
+                                th:href="@{/timetable(mode='room')}">By room</a></li>
+    </ul>
+
+    <form th:if="${mode != 'overview'}" th:action="@{/timetable}" method="get">
+        <input type="hidden" name="mode" th:value="${mode}">
+        <select name="id" class="form-select" onchange="this.form.submit()">
+            <th:block th:if="${mode == 'class'}">
+                <option th:each="c : ${classes}" th:value="${c.id}" th:text="${c.name}"
+                        th:selected="${c.id == selectedId}"></option>
+            </th:block>
+            <th:block th:if="${mode == 'teacher'}">
+                <option th:each="t : ${teachers}" th:value="${t.id}" th:text="${t.fullName}"
+                        th:selected="${t.id == selectedId}"></option>
+            </th:block>
+            <th:block th:if="${mode == 'room'}">
+                <option th:each="r : ${rooms}" th:value="${r.id}" th:text="${r.name}"
+                        th:selected="${r.id == selectedId}"></option>
+            </th:block>
+        </select>
+    </form>
+
+    <a class="btn btn-success ms-auto" th:href="@{/timetable/export(mode=${mode},id=${selectedId})}">
+        Export to Excel
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered tt" th:classappend="${matrix.periodHeader} ? 'compact'">
+        <thead class="table-light">
+        <tr>
+            <th th:text="${matrix.cornerLabel}" th:rowspan="${matrix.periodHeader} ? 2 : 1"></th>
+            <th th:each="d : ${matrix.days}" th:text="${d}" th:colspan="${matrix.periods}"></th>
+        </tr>
+        <tr th:if="${matrix.periodHeader}">
+            <th:block th:each="d : ${matrix.days}">
+                <th th:each="p : ${#numbers.sequence(1, matrix.periods)}" th:text="${p}"></th>
+            </th:block>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="row, r : ${matrix.cells}">
+            <th th:text="${matrix.rowLabels[r.index]}"></th>
+            <td th:each="cell : ${row}" th:text="${cell}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

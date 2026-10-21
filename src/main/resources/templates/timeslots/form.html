@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Time slot</title>
+    <th:block th:replace="~{fragments/layout :: headLinks}"/>
+</head>
+<body class="container py-4">
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<h1>Time slot</h1>
+<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+<form th:action="@{/timeslots/save}" th:object="${timeSlot}" method="post">
+    <input type="hidden" th:field="*{id}">
+    <div class="mb-3">
+        <label class="form-label">Day</label>
+        <select th:field="*{dayOfWeek}" class="form-select" required>
+            <option th:each="d : ${days}" th:value="${d.key}" th:text="${d.value}"></option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Period (Tiết)</label>
+        <input type="number" th:field="*{period}" class="form-control" min="1" max="12" required>
+    </div>
+    <button class="btn btn-primary">Save</button>
+    <a th:href="@{/timeslots}" class="btn btn-secondary">Cancel</a>
+</form>
+</body>
+</html>

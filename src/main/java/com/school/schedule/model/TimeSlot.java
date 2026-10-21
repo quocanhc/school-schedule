@@ -24,4 +24,21 @@ public class TimeSlot {
 
     @Column(nullable = false)
     private Integer period;
+
+    @Transient
+    public String getDayLabel() {
+        return dayOfWeek == null ? "" : label(dayOfWeek);
+    }
+
+    public static String label(DayOfWeek d) {
+        return switch (d) {
+            case MONDAY -> "Thứ Hai";
+            case TUESDAY -> "Thứ Ba";
+            case WEDNESDAY -> "Thứ Tư";
+            case THURSDAY -> "Thứ Năm";
+            case FRIDAY -> "Thứ Sáu";
+            case SATURDAY -> "Thứ Bảy";
+            case SUNDAY -> "Chủ Nhật";
+        };
+    }
 }
